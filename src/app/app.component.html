@@ -1,0 +1,131 @@
+<h1>To Do List</h1>
+
+<!-- Add item -->
+<table>
+    <form>
+        <tr>
+            <td>
+                <mat-form-field>
+                    <input matInput placeholder="Description" value="" [(ngModel)]="taskDesc" name="description">
+                </mat-form-field>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <mat-form-field>
+                    <mat-select placeholder="Select person" [(ngModel)]="selectedValue" name="person">
+                        <mat-option *ngFor="let person of personList | async" [value]="person.name">
+                            {{person.name}}
+                        </mat-option>
+                        <mat-option>
+                            Nobody
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button mat-button color="warn" (click)="addItem(taskDesc,selectedValue)"> 
+                        Add item
+                    </button>
+            </td>
+        </tr>
+    </form>
+</table>
+
+<!-- Filters -->
+<div id="filters">
+    <mat-form-field>
+        <mat-select placeholder="Current person" [(ngModel)]="currentPerson" name="currPerson" (change)="filterPerson(currentPerson)">
+            <mat-option *ngFor="let person of personList | async" [value]="person.name">
+                {{person.name}}
+            </mat-option>
+            <mat-option>
+                Nobody
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <button mat-button color="warn" (click)="showUndone()"> 
+        Show undone
+    </button>
+
+    <button mat-button color="warn" (click)="loadList()"> 
+        Show all
+    </button>
+</div>
+<!-- Table -->
+<div id="content">
+    <mat-table [dataSource]="itemList">
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+            <mat-cell *matCellDef="let item"> {{item.id}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="assignedTo">
+            <mat-header-cell *matHeaderCellDef> Assigned To </mat-header-cell>
+            <mat-cell *matCellDef="let item"> {{item.assignedTo}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="description">
+            <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
+            <mat-cell *matCellDef="let item"> {{item.description}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="done">
+            <mat-header-cell *matHeaderCellDef> Done </mat-header-cell>
+            <mat-cell *matCellDef="let item">
+                <mat-checkbox [checked]="item.done" (click)="toggleDone(item)">Done</mat-checkbox>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="options">
+            <mat-header-cell *matHeaderCellDef> Options </mat-header-cell>
+            <mat-cell *matCellDef="let item">
+                <button mat-button (click)="toggleEditTask(item)"> 
+                    Edit
+                </button>
+                <button mat-button (click)="deleteItem(item)"> 
+                    Delete
+                </button>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+        <mat-row *matRowDef="let myRowData; columns: columns"></mat-row>
+    </mat-table>
+    <br/>
+</div>
+
+<!-- Edit item -->
+<table [hidden]="getEditTask()">
+    <form>
+        <tr>
+            <td>
+                <mat-form-field>
+                    <input matInput placeholder="{{getCurrentEditItemDescription()}}" [(ngModel)]="editTaskDesc" name="editDescription">
+                </mat-form-field>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <mat-form-field>
+                    <mat-select placeholder="{{getCurrentEditItemPerson()}}" [(ngModel)]="editSelectedValue" name="editPerson">
+                        <mat-option *ngFor="let person of personList | async" [value]="person.name">
+                            {{person.name}}
+                        </mat-option>
+                        <mat-option>
+                            Nobody
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button mat-button color="warn" (click)="editItem(editTaskDesc,editSelectedValue)"> 
+                    Edit item
+                </button>
+            </td>
+        </tr>
+    </form>
+</table>
